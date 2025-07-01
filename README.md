@@ -1,217 +1,146 @@
-## Jenkins Robotics
-# Jenkins CNC
+## Jenkins Robotics  
+# STT_Demos – Local Speech Recognition Showcase  
 
 <!-- This is commented out. -->
 
-## Project Information
+## Project Information  
 
-Project Status : <mark style="background-color: green"> &nbsp; COMPLETED &nbsp;</mark>  
-Code Status : <mark style="background-color: green"> &nbsp; GOOD &nbsp;</mark>  
-Development Status : <mark style="background-color: red"> &nbsp; NOT ACTIVE &nbsp;</mark>  
+Project Status : <mark style="background-color: green"> &nbsp; ACTIVE &nbsp;</mark>  
+Code Status : <mark style="background-color: green"> &nbsp; STABLE &nbsp;</mark>  
+Development Status : <mark style="background-color: orange"> &nbsp; ONGOING &nbsp;</mark>  
 
+&nbsp;  
+## General Information  
 
+This project is a growing collection of local/offline STT (Speech-to-Text) demos used to benchmark and explore different open-source speech recognition engines. Designed for robotics and voice interface applications, each demo includes either a real-time or batch processing interface for fast testing and integration.  
 
-&nbsp;
-## General Information
+Goals include:
+- [x] Evaluate transcription speed and accuracy  
+- [x] Compare real-time vs batch models  
+- [x] Support macOS (Apple Silicon) with MPS where applicable  
+- [x] Build a foundation for full-duplex speech interaction  
+- [x] Integrate with TTS_Demos in future agents  
+- [x] Add transcript benchmarking + WER tools  
+- [x] Measure latency, duplication, and streaming fidelity  
 
+<!--  
+&nbsp;  
+## WATCH DEMOS ON YOUTUBE  
 
- This is the project files for our Shapeoko 3 xxl. Our goal is to make our shapeoko 3 as automated as possible. To achive this goal we have installed multiple upgrades onto our cnc including: 
-- [x] Automated Tool Change
-- [x] Manual Tool Change
-- [x] Coolent 
-- [x] Tool Z Probe Macro
-- [x] Work Piece XYZ Probe
-- [x] Spindle Control
-- [x] Modularity
+Watch the demo playlist and future voice tests on YouTube.  
 
-&nbsp;
-## WATCH NOW ON YOUTUBE
+[![image alt text](http://img.youtube.com/vi/w-qWbZ5-IQw/0.jpg)](https://youtube.com/playlist?list=PLNTKXZ4hgP_jekZOWw05JcJtyseCdSsIV "YouTube")  
+-->
 
+&nbsp;  
+## Support  
 
- Watch the project playlist on youtube. 
+Like our work? Consider supporting Jenkins Robotics!  
 
- &nbsp;
+Subscribe ➔ https://www.youtube.com/@Jenkins_Robotics   <br>  
+Patreon ➔ https://www.patreon.com/JenkinsRobotics  <br>  
+Venmo ➔ https://venmo.com/u/JenkinsRobotics  <br>  
 
-[![image alt text](http://img.youtube.com/vi/w-qWbZ5-IQw/0.jpg)](https://youtube.com/playlist?list=PLNTKXZ4hgP_jekZOWw05JcJtyseCdSsIV "YouTube")
+&nbsp;  
+## Table of Contents  
 
-&nbsp;
-## Support
+**[STT Engines Included](#stt-engines-included)**<br>  
+**[Installation Instructions](#installation-instructions)**<br>  
+**[CLI + Real-Time App Summaries](#cli--real-time-app-summaries)**<br>  
+**[Next Steps](#next-steps)**<br>  
+**[Licenses and Credits](#licenses-and-credits)**<br>  
 
-Did this project help you? Consider supporting! 
+&nbsp;  
+## STT Engines Included  
 
-Consider Subscribing: https://bit.ly/2DgZyuq <br>
-Patreon ➔ https://www.patreon.com/JenkinsRobotics <br>
-Venmo ➔ https://venmo.com/u/JenkinsRobotics <br>
+| Engine         | Interface     | Offline? | Notes |
+|----------------|---------------|----------|-------|
+| Vosk           | Real-time     | ✅ Yes   | Fast, lightweight, low-memory CPU STT |
+| FasterWhisper  | Real-time     | ✅ Yes   | CTranslate2-backed Whisper. High accuracy, CPU-only on Mac |
+| Whisper.cpp    | CLI + GUI     | ✅ Yes   | Metal/ANE-accelerated C++ engine for macOS |
+| pywhispercpp   | Python API    | ✅ Yes   | Metal-accelerated Python bindings for Whisper.cpp |
+| Whisper MLX    | File          | ✅ Yes   | GPU-accelerated MLX backend for macOS |
+| RealTimeSTT    | Real-time     | ✅ Yes   | Lightweight real-time demo |
+| SpeechRecSTT   | Real-time     | ✅ Yes   | Uses Python’s SpeechRecognition/pocketsphinx |
 
+&nbsp;  
+## Installation Instructions  
 
+Clone this repo and install dependencies for each STT demo as needed. For macOS (Apple Silicon recommended):  
 
-&nbsp;
-## Table of Contents
-
-
-**[Project File Structure](#project-file-structure)**<br>
-**[Installation Instructions](#installation-instructions)**<br>
-**[Next Steps](#next-steps)**<br>
-**[Components](#components)**<br>
-**[Notes and Miscellaneous](#notes-and-miscellaneous)**<br>
-**[Links](#links)**<br>
-
-
-&nbsp;
-## Project File Structure
-
-The following is a breakdown of the different folders and the files contained in them:
-
-1. **FUSION 360 POST PROCESSOR**
-    - *JenkinsCNCReprap.cps*
-    A post processor is the link between the CAM system and your CNC machine. The Post Processor translated the CAM instruction including information like the toolpath data, the type of operation, and the desired spindle feeds/speeds into the language that a CNC machine understands (gcode). Despite the fact that the DUET 3 runs RepRap Firmware, the standard RepRap post processor do not work for CNC machining. Our Custom post processor is based on the default RepRap post processor but fixes the gcode syntax errors and adds many additional modular features. 
-    **Directions:**
-      - Uploading file to Fusion 360 Cloud Storage [Personal-cloud]
-        With-in Fusion 360 open the project navigation panel. Under Libraries select "Assets", then select folder "CAMPosts" (if no folder exist then create one.) Upload the custom Post Processor within this folder for cloud storage. 
-      - Create NC Program
-        After creating your CAD model select the "Manufacturing Tab" in Fusion 360. Complete the "Setup" process and the desired toolpaths. Create a new "NC Program".  Under "Post Configuration / Library" specify the location of the Post Processor File [personal-cloud recommended]. Under Post specify the desired file "Jenkins CNC RepRap". Adjust Post Properties if desired, then export gcode.  
-
-
-    
-    &nbsp;
-2. **GCODE**  
-   - *SDCARD*
-    This folder contains a copy of all they files located on our Duet 3 Motherboard SD Card. The system drive contains multiple subfolders each containing different gcode / system files. Before Copying/referencing our  custom files it is best to upgrade the stock firmware and system files. The official Duet 3 releases can be found on GitHub.  [RepRap Files](https://github.com/Duet3D "Duet3D").
-      
-   - *Macros*
-    The Macro folder contains all the additional system files needed for the Duet 3. Files are grouped by their function. 
-     **Directions:**
-        - Upload any of the desired files. Then review the files and make any necessary  adjustment to the position points and the probe/sensors numbers.  
-
-   - *Sys*
-    The System folder contains all the important system files needed for the Duet 3. Each file serves as important gcode files that configures the machine and provide necessary gcode for specific processes like tool changes. 
-        **Directions:**
-        - For AutoTool Change Upload the following files:  TFree, Tpost, Tpre, ToolZProbe        
-        - For manual tool Change Upload the following files:  manualtoolchange, ToolZProbe,
-
-
-
-    &nbsp;
-3. **GH Pages**
-    - Files used for Github Pages and readme text file. 
-
-
-  
-
-    &nbsp;
-4. **MANUALS**
-   - *Post Processor Training Guide*
-     - The reference file for fusion 360 post proccessor. Contains reference material for different hadware apart of the CNC. 
-    
-  
-      
-
-
-> Note: Updating the RepRap firmware should be done carefully. Uploading the updated ZIP file could erase custom gcode files. 
-
-
-&nbsp;
-## Installation Instructions
-
-Installation instructions can be found in the youtube video linked below 
- 
-
- ### Video link  be updated soon
-
-[![image alt text](http://img.youtube.com/vi/w-qWbZ5-IQw/0.jpg)](https://youtube.com/playlist?list=PLNTKXZ4hgP_jekZOWw05JcJtyseCdSsIV "YouTube")
-
-
-<!-- This is commented out.  
-
-The following is a breakdown of the different folders and the files contained in them:
-
-
-```
-cd utils
-node build.js
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-
-Create a file with a `.zip` extension containing these files and directories:
-
-```
-manifest.json
-common/
-chrome/
-```
-
-
-Create a file with a `.xpi` extension containing these files and directories:
-
-```
-chrome.manifest
-install.rdf
-common/
-firefox/
+To run a demo:  
+```bash
+python whisper_stt.py         # Whisper offline
+python vosk_stt.py            # Vosk-based
+python real_time_stt.py       # Stream + print live transcript
+python speechrec_stt.py       # SpeechRecognition (pocketsphinx)
 ```
 
- This is commented out. -->
+To run Whisper.cpp CLI-based GUI:  
+```bash
+python whisper_gui_app.py     # Runs rolling 10s inference using whisper.cpp
+```
 
+&nbsp;  
+## CLI + Real-Time App Summaries  
 
-&nbsp;
-## Next Steps
+- **whisper_gui_app.py**  
+  Uses Whisper.cpp via CLI, transcribes 10s rolling mic buffers. Shows final, clean transcript and saves to `.txt`.
 
-This project is now completed. No next steps are planned. We can release bug fixes if found. 
+- **whisper_stt.py**  
+  Runs FasterWhisper (CTranslate2) on CPU. GUI with volume meter and chunked partial/final transcript view.
 
-If you require assistant join our discord channel linked down below.
+- **vosk_stt.py**  
+  Lightweight Kaldi-based transcription. Fast and accurate. CPU only.
 
+- **pywhispercpp_demo.py**  
+  GPU-accelerated via Metal. Uses pywhispercpp binding and simple file-based API.
 
+- **mlx_whisper_stt.py**  
+  Apple MLX version of Whisper. Fast file-based inference with `whisper-medium` model.
 
-&nbsp;
-## Components 
+- **real_time_stt.py**  
+  Basic microphone streaming demo. Updates in real time.
 
-The following is a breakdown of key components for this project:
-&nbsp;
-| Item          | Function      | Cost  |
-| ------------- |:-------------:| -----:|
-| Fusion 360    | CAD           | Free |
-| VS Code       | Text Editor   |   Free |
+- **speechrec_stt.py**  
+  Fully offline. Uses pocketsphinx via SpeechRecognition for basic commands.
 
+&nbsp;  
+## Next Steps  
 
-&nbsp;
-## Notes and Miscellaneous
+- Add real-time MLX streaming demo  
+- Add Whisper.cpp streaming support (token-by-token if available)  
+- Integrate LLM to clean up repetitive transcripts  
+- Export transcripts + benchmark against ground truth  
+- Build full-duplex loop with TTS_Demos + interrupt handling  
 
+&nbsp;  
+## Links  
 
-Disclaimer :
-Modifying your Shapeoko  will void the warranty. Do at your own risk.
+SUPPORT US ►  
 
-**ENJOY!!**
-
-That’s  all Folks. Hope this can help you in some way.
-... Consider Supporting Us Down Below. 
-
-&nbsp;
-## Links
-
-
-SUPPORT US ► 
-
-Consider Subscribing: https://bit.ly/2DgZyuq <br>
+Subscribe ➔ https://www.youtube.com/@Jenkins_Robotics<br>
 Patreon ➔ https://www.patreon.com/JenkinsRobotics  <br>
 Venmo ➔ https://venmo.com/u/JenkinsRobotics <br>
-
 
 FOLLOW US ►
 
 Discord ➔ https://discord.gg/sAnE5pRVyT <br>
 Patreon ➔ https://www.patreon.com/JenkinsRobotics <br>
-Twitter ➔ https://twitter.com/j <br>
+Twitter ➔ https://twitter.com/jenkinsrobotics  <br>
 Instagram  ➔ https://www.instagram.com/jenkinsrobotics/ <br>
 Facebook ➔ https://www.facebook.com/jenkinsrobotics/  <br>
 GitHub  ➔ https://jenkinsrobotics.github.io <br>
 
+&nbsp;  
+## Licenses and Credits  
 
+All third-party models and libraries retain their original licenses. This repo is intended for R&D, robotics, and AI voice assistant prototyping.  
 
-
-
-
-
-
-
-
-
+© Jenkins Robotics 2025
